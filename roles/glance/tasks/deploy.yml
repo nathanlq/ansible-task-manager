@@ -1,0 +1,46 @@
+---
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Pull Glance Docker image
+  docker_image:
+    name: "{{ glance_image }}"
+    source: pull
+
+- name: Ensure Glance configuration directory exists
+  file:
+    path: "{{ glance_config_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy Glance configuration to target machine
+  copy:
+    src: "{{ glance_config_src }}"
+    dest: "{{ glance_config_dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  register: config_copy
+
+- name: Restart Glance container if config changed
+  docker_container:
+    name: "{{ glance_container_name }}"
+    image: "{{ glance_image }}"
+    state: started
+    restart: yes
+    restart_policy: unless-stopped
+    ports: "{{ glance_ports }}"
+    volumes: "{{ glance_volumes }}"
+  when: config_copy.changed
+
+- name: Ensure Glance container is running
+  docker_container:
+    name: "{{ glance_container_name }}"
+    image: "{{ glance_image }}"
+    state: started
+    restart_policy: unless-stopped
+    ports: "{{ glance_ports }}"
+    volumes: "{{ glance_volumes }}"

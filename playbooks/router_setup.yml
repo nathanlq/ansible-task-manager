@@ -1,0 +1,6 @@
+---
+- name: Setup router
+  hosts: network_group
+  become: true
+  roles:
+    - router

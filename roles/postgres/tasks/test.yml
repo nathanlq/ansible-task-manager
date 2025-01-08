@@ -1,0 +1,14 @@
+---
+- name: Wait for PostgreSQL to be ready
+  wait_for:
+    host: "{{ ansible_host }}"
+    port: 5432
+    state: started
+    timeout: 30
+  register: postgres_check
+  ignore_errors: true
+
+- name: Display PostgreSQL service status
+  debug:
+    msg: |
+      PostgreSQL: {{ 'UP' if postgres_check.failed == false else 'DOWN' }}

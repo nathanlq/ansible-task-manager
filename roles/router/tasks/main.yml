@@ -1,0 +1,9 @@
+---
+- name: Setup required packages
+  include_tasks: setup_packages.yml
+
+- name: Setup Docker environment
+  include_tasks: setup_docker.yml
+
+- name: Setup Nginx Proxy Manager
+  include_tasks: setup_nginx_proxy_manager.yml

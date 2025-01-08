@@ -1,0 +1,34 @@
+---
+- name: Gather OS specific facts
+  setup:
+    gather_subset: min
+
+- name: Stop and remove existing Portainer agent container
+  command:
+    cmd: docker rm -f portainer_agent
+  ignore_errors: true
+  when: ansible_facts['os_family'] in ['Debian', 'Alpine']
+
+- name: Pull Portainer agent image
+  command:
+    cmd: docker pull "{{ portainer_agent_image }}"
+  when: ansible_facts['os_family'] in ['Debian', 'Alpine']
+
+- name: Deploy Portainer agent
+  command:
+    cmd: >
+      docker run -d
+      -p {{ portainer_agent_ports[0] }}
+      --name portainer_agent
+      --restart=always
+      -v /var/run/docker.sock:/var/run/docker.sock
+      -v /var/lib/docker/volumes:/var/lib/docker/volumes
+      -v /:/host
+      {{ portainer_agent_image }}
+  when: inventory_hostname != 'monitoring_group' and ansible_facts['os_family'] in ['Debian', 'Alpine']
+
+- name: Wait for Portainer agent to start
+  wait_for:
+    port: "{{ portainer_agent_ports[0].split(':')[0] | int }}"
+    timeout: 300
+  when: inventory_hostname != 'monitoring_group' and ansible_facts['os_family'] in ['Debian', 'Alpine']

@@ -1,0 +1,16 @@
+---
+- name: Deploy Portainer
+  docker_container:
+    name: portainer
+    image: "{{ portainer_image }}"
+    state: started
+    restart_policy: unless-stopped
+    ports: "{{ portainer_ports }}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "{{ portainer_data_volume }}"
+
+- name: Wait for service to start
+  wait_for:
+    port: 9443
+    timeout: 300

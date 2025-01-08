@@ -1,0 +1,9 @@
+---
+- name: Deploy Portainer
+  include_tasks: deploy_portainer.yml
+
+- name: Install Portainer agent on all VMs except monitoring_group
+  include_tasks: install_agent.yml
+
+- name: Force restart of Portainer
+  include_tasks: restart_portainer.yml

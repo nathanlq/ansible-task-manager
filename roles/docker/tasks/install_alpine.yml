@@ -1,0 +1,7 @@
+---
+- name: Install Docker and Docker Compose on Alpine-based systems
+  apk:
+    name:
+      - docker
+      - docker-compose
+    state: present

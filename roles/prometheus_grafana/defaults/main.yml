@@ -1,0 +1,6 @@
+---
+prometheus_config_path: /home/ubuntu/prometheus
+prometheus_docker_compose_path: /home/ubuntu/docker-compose.yml
+prometheus_targets:
+  - "0.0.0.0:9090"
+  - "{% for ip in groups['workers'] %}{{ ip }}:9100{% if not loop.last %},{% endif %}{% endfor %}"

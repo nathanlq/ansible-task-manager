@@ -1,0 +1,10 @@
+postgres_image: pgvector/pgvector:pg17
+postgres_container_name: postgres_db
+postgres_ports:
+  - "5432:5432"
+postgres_volumes:
+  - postgres_data:/var/lib/postgresql/data
+postgres_env:
+  POSTGRES_DB: "{{ gitea_db }}"
+  POSTGRES_USER: "{{ gitea_db_user }}"
+  POSTGRES_PASSWORD: "{{ gitea_password }}"

@@ -1,0 +1,13 @@
+---
+- name: Wait for pgAdmin
+  uri:
+    url: "http://{{ pgadmin_domain }}"
+    method: GET
+    status_code: 200
+  register: pgadmin_check
+  ignore_errors: true
+
+- name: Display pgAdmin service status
+  debug:
+    msg: |
+      pgAdmin: {{ 'UP' if pgadmin_check.failed == false else 'DOWN' }}

@@ -1,0 +1,13 @@
+---
+- name: Update package cache
+  community.general.apk:
+    update_cache: yes
+    upgrade: yes
+
+- name: Install required packages
+  community.general.apk:
+    name:
+      - docker
+      - curl
+      - docker-compose
+    state: present

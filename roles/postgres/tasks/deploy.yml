@@ -1,0 +1,21 @@
+---
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Pull PostgreSQL Docker image
+  docker_image:
+    name: "{{ postgres_image }}"
+    source: pull
+
+- name: Create PostgreSQL container
+  docker_container:
+    name: "{{ postgres_container_name }}"
+    image: "{{ postgres_image }}"
+    state: started
+    restart_policy: always
+    env: "{{ postgres_env }}"
+    ports: "{{ postgres_ports }}"
+    volumes: "{{ postgres_volumes }}"

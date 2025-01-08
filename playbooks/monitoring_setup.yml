@@ -1,0 +1,12 @@
+---
+- name: Setup Prometheus and Grafana
+  hosts: monitoring_group
+  become: true
+  roles:
+    - prometheus_grafana
+
+- name: Setup Node Exporter
+  hosts: "{{ groups['all'] | difference(groups['monitoring_group']) }}"
+  become: true
+  roles:
+    - node_exporter

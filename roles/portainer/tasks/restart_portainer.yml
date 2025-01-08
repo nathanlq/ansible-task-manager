@@ -1,0 +1,10 @@
+---
+- name: Stop Portainer container
+  docker_container:
+    name: portainer
+    state: stopped
+
+- name: Restart Portainer container
+  docker_container:
+    name: portainer
+    state: started

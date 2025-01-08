@@ -1,0 +1,36 @@
+---
+- name: Gather OS specific facts
+  setup:
+    gather_subset: min
+
+- name: Install prerequisites
+  include_tasks: install_debian.yml
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Install Docker and Docker Compose on Alpine-based systems
+  include_tasks: install_alpine.yml
+  when: ansible_facts['os_family'] == 'Alpine'
+
+- name: Start and enable Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Verify Docker and Docker Compose versions
+  block:
+    - name: Verify Docker version
+      command: docker -v
+      register: docker_version
+
+    - name: Verify Docker Compose version
+      command: docker compose version
+      register: docker_compose_version
+
+    - name: Display Docker version
+      debug:
+        msg: "Docker version: {{ docker_version.stdout }}"
+
+    - name: Display Docker Compose version
+      debug:
+        msg: "Docker Compose version: {{ docker_compose_version.stdout }}"

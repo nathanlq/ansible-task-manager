@@ -1,0 +1,31 @@
+---
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Pull Redis Stack Docker image
+  docker_image:
+    name: redis/redis-stack:latest
+    source: pull
+
+- name: Create Redis Stack container
+  docker_container:
+    name: redis_stack
+    image: redis/redis-stack:latest
+    state: started
+    restart_policy: always
+    env:
+      REDIS_ARGS: "--requirepass {{ redis_password }}"
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    volumes:
+      - redis_data:/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.redis.rule: "Host(`{{ redis_domain }}`)"
+      traefik.http.services.redis.loadbalancer.server.port: "6379"
+      traefik.http.routers.redis_ui.rule: "Host(`{{ redis_ui_domain }}`)"
+      traefik.http.services.redis_ui.loadbalancer.server.port: "8001"

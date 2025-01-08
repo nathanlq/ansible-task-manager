@@ -1,0 +1,12 @@
+---
+- name: Check if MLflow container is running
+  command: docker ps --filter "name={{ mlflow_container_name }}" --filter "status=running" --format "{{ '{{.Names}}' }}"
+  register: mlflow_status
+  changed_when: false
+
+- name: Display MLflow status
+  debug:
+    msg: >
+      MLflow status: {{
+        'UP' if mlflow_status.stdout.find(mlflow_container_name) != -1 else 'DOWN'
+      }}

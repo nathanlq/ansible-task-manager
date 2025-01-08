@@ -1,0 +1,8 @@
+---
+- name: Deploy MLflow Infrastructure
+  hosts: monitoring_group
+  become: true
+  vars_files:
+    - ../vars/storage.yml
+  roles:
+    - mlflow

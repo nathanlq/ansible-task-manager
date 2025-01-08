@@ -1,0 +1,14 @@
+---
+- name: Wait for Gitea
+  uri:
+    url: "http://{{ gitea_domain }}"
+    method: GET
+    status_code: 200
+  register: gitea_check
+  ignore_errors: true
+
+- name: Display pgAdmin service status
+  debug:
+    msg: |
+      Gitea : {{ 'UP' if gitea_check.failed == false else 'DOWN' }}
+

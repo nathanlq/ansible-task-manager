@@ -1,0 +1,10 @@
+---
+- name: Check if Glance container is running
+  command: docker ps --filter "name={{ glance_container_name }}" --filter "status=running" --format "{{ '{{.Names}}' }}"
+  register: glance_status
+  changed_when: false
+
+- name: Display Glance container status
+  debug:
+    msg: >
+      Glance status: {{'UP' if glance_status.stdout.find(glance_container_name) != -1 else 'DOWN'}}

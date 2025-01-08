@@ -1,0 +1,13 @@
+pgadmin_image: dpage/pgadmin4:latest
+pgadmin_container_name: pgadmin
+pgadmin_ports:
+  - "8081:80"
+pgadmin_volumes:
+  - pgadmin_data:/var/lib/pgadmin
+pgadmin_env:
+  PGADMIN_DEFAULT_EMAIL: "{{ pgadmin_email }}"
+  PGADMIN_DEFAULT_PASSWORD: "{{ pgadmin_password }}"
+pgadmin_labels:
+  traefik.enable: "true"
+  traefik.http.routers.pgadmin.rule: "Host(`{{ pgadmin_domain }}`)"
+  traefik.http.services.pgadmin.loadbalancer.server.port: "80"

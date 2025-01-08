@@ -1,0 +1,62 @@
+---
+- name: Ensure Prometheus configuration directory exists
+  file:
+    path: /home/ubuntu/prometheus
+    state: directory
+
+- name: Ensure Docker Compose configuration file exists
+  copy:
+    dest: /home/ubuntu/docker-compose.yml
+    content: |
+      version: '3.8'
+      volumes:
+        prometheus-data: {}
+        grafana-data: {}
+      services:
+          prometheus:
+            image: prom/prometheus:latest
+            container_name: prometheus
+            network_mode: host
+            restart: unless-stopped
+            command:
+              - --config.file=/etc/prometheus/prometheus.yml
+              - --web.enable-lifecycle
+            volumes:
+              - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+              - prometheus-data:/prometheus
+          grafana:
+            image: grafana/grafana:latest
+            container_name: grafana
+            restart: unless-stopped
+            network_mode: host
+            volumes:
+              - grafana-data:/var/lib/grafana
+    mode: '0644'
+
+- name: Copy Prometheus Configuration
+  copy:
+    dest: /home/ubuntu/prometheus/prometheus.yml
+    content: |
+      global:
+        scrape_interval: 15s
+      scrape_configs:
+        - job_name: prometheus
+          static_configs:
+            - targets:
+                - '0.0.0.0:9090'
+        - job_name: node
+          static_configs:
+            - targets: [{% for ip in groups['all'] | difference(groups['monitoring_group']) %}'{{ ip }}:9100', {% endfor %}]
+    mode: '0644'
+
+- name: Pull Docker images
+  shell: |
+    docker compose -f /home/ubuntu/docker-compose.yml pull
+  args:
+    executable: /bin/bash
+
+- name: Start Prometheus and Grafana containers
+  shell: |
+    docker compose -f /home/ubuntu/docker-compose.yml up -d
+  args:
+    executable: /bin/bash

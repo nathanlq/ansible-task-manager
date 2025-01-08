@@ -1,0 +1,12 @@
+---
+glance_image: glanceapp/glance
+glance_container_name: glance
+glance_ports:
+  - "8080:8080"
+glance_volumes:
+  - /opt/glance/glance.yml:/app/glance.yml
+  - /etc/timezone:/etc/timezone:ro
+  - /etc/localtime:/etc/localtime:ro
+glance_config_src: glance.yml
+glance_config_dest: /opt/glance/glance.yml
+glance_config_path: /opt/glance

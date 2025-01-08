@@ -1,0 +1,49 @@
+- name: Create Nginx Proxy Manager directory
+  file:
+    path: "{{ npm_path }}"
+    state: directory
+    mode: "0755"
+
+- name: Create data directories
+  file:
+    path: "{{ npm_path }}/{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - data
+    - letsencrypt
+
+- name: Create docker-compose.yml
+  copy:
+    dest: "{{ npm_path }}/docker-compose.yml"
+    content: |
+      version: '3'
+      services:
+        app:
+          image: 'jc21/nginx-proxy-manager:latest'
+          restart: unless-stopped
+          ports:
+            - '80:80'
+            - '443:443'
+            - '81:81'
+          volumes:
+            - {{ npm_path }}/data:/data
+            - {{ npm_path }}/letsencrypt:/etc/letsencrypt
+
+- name: Check if Nginx Proxy Manager is already running
+  command: docker-compose ps -q
+  args:
+    chdir: "{{ npm_path }}"
+  register: compose_ps
+  ignore_errors: true
+
+- name: Deploy Nginx Proxy Manager
+  command: docker-compose up -d
+  args:
+    chdir: "{{ npm_path }}"
+  when: compose_ps.stdout == ""
+
+- name: Wait for service to start
+  wait_for:
+    port: 81
+    timeout: 300

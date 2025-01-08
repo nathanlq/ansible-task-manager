@@ -1,0 +1,11 @@
+---
+- name: Deploy Storage Infrastructure
+  hosts: storage_group
+  become: true
+  vars_files:
+    - ../vars/storage.yml
+  roles:
+    - postgres
+    - pgadmin
+    - gitea
+    - redis

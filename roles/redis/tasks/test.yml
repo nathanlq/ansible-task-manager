@@ -1,0 +1,22 @@
+---
+- name: Wait for Redis to be ready
+  wait_for:
+    host: "{{ ansible_host }}"
+    port: 6379
+    state: started
+    timeout: 30
+  register: redis_check
+  ignore_errors: true
+
+- name: Wait for RedisInsight to be ready
+  uri:
+    url: "http://{{ redis_ui_domain }}"
+    method: GET
+    status_code: 200
+  register: redis_ui_check
+  ignore_errors: true
+
+- name: Display Redis service status
+  debug:
+    msg: |
+      Redis : {{ 'UP' if redis_ui_check.failed == false else 'DOWN' }}

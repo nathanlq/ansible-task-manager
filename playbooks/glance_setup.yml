@@ -1,0 +1,6 @@
+---
+- name: Deploy Glance Infrastructure
+  hosts: monitoring_group
+  become: true
+  roles:
+    - glance

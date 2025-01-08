@@ -1,0 +1,16 @@
+---
+- name: Pull Gitea Docker image
+  docker_image:
+    name: "{{ gitea_image }}"
+    source: pull
+
+- name: Create Gitea container
+  docker_container:
+    name: "{{ gitea_container_name }}"
+    image: "{{ gitea_image }}"
+    state: started
+    restart_policy: always
+    env: "{{ gitea_env }}"
+    ports: "{{ gitea_ports }}"
+    volumes: "{{ gitea_volumes }}"
+    labels: "{{ gitea_labels }}"

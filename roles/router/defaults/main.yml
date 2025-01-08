@@ -1,0 +1,3 @@
+---
+npm_path: /opt/nginx-proxy-manager
+npm_image: jc21/nginx-proxy-manager:latest

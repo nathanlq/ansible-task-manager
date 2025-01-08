@@ -1,0 +1,46 @@
+---
+- name: Ensure Node Exporter configuration directory exists
+  file:
+    path: /home/ubuntu/node-exporter
+    state: directory
+
+- name: Copy Docker Compose file for Node Exporter
+  copy:
+    dest: /home/ubuntu/node-exporter/docker-compose.yml
+    content: |
+      version: '3.8'
+      services:
+        node-exporter:
+          image: quay.io/prometheus/node-exporter:latest
+          restart: always
+          ports:
+            - '9100:9100'
+          command:
+            - '--path.rootfs=/host'
+          volumes:
+            - '/:/host:ro,rslave'
+    mode: '0644'
+
+- name: Stop any running Node Exporter container
+  shell: |
+    docker ps -q --filter "ancestor=quay.io/prometheus/node-exporter" | xargs -r docker stop
+  ignore_errors: true
+
+- name: Remove any Node Exporter container
+  shell: |
+    docker ps -a -q --filter "ancestor=quay.io/prometheus/node-exporter" | xargs -r docker rm
+  ignore_errors: true
+
+- name: Start Node Exporter with Docker Compose
+  shell: |
+    docker compose -f /home/ubuntu/node-exporter/docker-compose.yml up -d
+  args:
+    executable: /bin/bash
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Start Node Exporter with Docker Compose
+  shell: |
+    docker-compose -f /home/ubuntu/node-exporter/docker-compose.yml up -d
+  args:
+    executable: /bin/bash
+  when: ansible_facts['os_family'] == 'Alpine'

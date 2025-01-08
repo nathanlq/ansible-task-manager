@@ -1,0 +1,25 @@
+---
+- name: Install prerequisites on Debian-based systems
+  apt:
+    name:
+      - curl
+      - ca-certificates
+      - gnupg
+    state: present
+    update_cache: yes
+
+- name: Install Docker on Debian-based systems
+  shell: |
+    curl -fsSL https://get.docker.com | sh
+
+- name: Create Docker Compose directory
+  file:
+    path: "{{ ansible_env.HOME }}/.docker/cli-plugins"
+    state: directory
+    mode: "0755"
+
+- name: Download Docker Compose
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/v2.32.0/docker-compose-linux-x86_64"
+    dest: "{{ ansible_env.HOME }}/.docker/cli-plugins/docker-compose"
+    mode: "0755"

@@ -1,0 +1,15 @@
+---
+mlflow_image: git.spacesheep.ovh/nathanlq/mlflow-server:latest
+mlflow_container_name: mlflow
+mlflow_ports:
+  - "5000:5000"
+mlflow_env:
+  MLFLOW_BACKEND_STORE_URI: "sqlite:////mlflow/data/mlflow.db"
+  MLFLOW_ARTIFACT_ROOT: "/mlflow/artifacts"
+mlflow_volumes:
+  - "/mlflow/artifacts:/mlflow/artifacts"
+  - "/mlflow/data:/mlflow/data"
+mlflow_directories:
+  - /mlflow/artifacts
+  - /mlflow/data
+gitea_registry: git.spacesheep.ovh
